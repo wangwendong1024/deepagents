@@ -1,0 +1,34 @@
+[Unit]
+Description=MyDeepAgent %i inference
+After=srv-models.mount
+BindsTo=srv-models.mount
+RequiresMountsFor=/srv/models
+StartLimitIntervalSec=180
+StartLimitBurst=5
+
+[Service]
+Type=exec
+DynamicUser=yes
+WorkingDirectory=/opt/mydeepagent/inference
+EnvironmentFile=/etc/mydeepagent/inference/%i.env
+Environment=CUDA_VISIBLE_DEVICES= HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 PYTHONDONTWRITEBYTECODE=1 NO_PROXY=* no_proxy=*
+UnsetEnvironment=HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy
+LoadCredential=model-token:/etc/mydeepagent/inference/api.key
+ExecStartPre=/usr/bin/bash /opt/mydeepagent/inference/services/check-model-store.sh ${MODEL_DIR}/model.safetensors
+ExecStart=/opt/mydeepagent/inference/python/bin/python -u /opt/mydeepagent/inference/services/auxiliary_server.py %i --model-dir ${MODEL_DIR} --host 127.0.0.1 --port ${MODEL_PORT} --threads 4 --api-key-file %d/model-token
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+IPAddressDeny=any
+IPAddressAllow=localhost
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

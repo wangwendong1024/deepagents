@@ -1,0 +1,33 @@
+[Unit]
+Description=MyDeepAgent Qwen chat inference
+After=srv-models.mount
+BindsTo=srv-models.mount
+RequiresMountsFor=/srv/models
+StartLimitIntervalSec=180
+StartLimitBurst=5
+
+[Service]
+Type=exec
+DynamicUser=yes
+WorkingDirectory=/opt/mydeepagent/inference
+EnvironmentFile=/etc/mydeepagent/inference/llama.env
+Environment=CUDA_VISIBLE_DEVICES=0 HF_HUB_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 NO_PROXY=* no_proxy=*
+UnsetEnvironment=HTTP_PROXY HTTPS_PROXY ALL_PROXY http_proxy https_proxy all_proxy
+LoadCredential=model-token:/etc/mydeepagent/inference/api.key
+ExecStartPre=/usr/bin/bash /opt/mydeepagent/inference/services/check-model-store.sh ${MODEL_WEIGHT}
+ExecStart=/opt/mydeepagent/inference/llama.cpp/v0.9.0/bin/llama-server --offline --no-mmproj --no-ui --no-slots -m ${MODEL_WEIGHT} --alias ${MODEL_ID} --ctx-size 8192 --parallel 1 --n-gpu-layers all --jinja --reasoning off --host 127.0.0.1 --port ${MODEL_PORT} --api-key-file %d/model-token
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+IPAddressDeny=any
+IPAddressAllow=localhost
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

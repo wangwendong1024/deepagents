@@ -1,0 +1,31 @@
+# Paths are relative to this configuration file. No connection is made by check-config.
+catalog_path = "catalog.example.json"
+skills_directory = "skills"
+
+[database]
+# sqlite:///local.db, postgresql+psycopg://..., or mysql+pymysql://...
+url_env = "MYDEEPAGENT_DATABASE_URL"
+
+[model]
+provider = "openai"
+# Fill the model/deployment ID accepted by your provider; there is no implicit default.
+model = ""
+# For an OpenAI-compatible vendor, uncomment and set its Chat Completions base URL.
+# base_url = "https://your-provider.example/v1"
+api_key_env = "MYDEEPAGENT_MODEL_API_KEY"
+use_responses_api = false
+timeout_seconds = 30
+max_retries = 1
+# Optional: omit for models that do not accept temperature.
+# temperature = 0
+
+[execution]
+tenant_id = "local-demo"
+actor_id = "mydeepagent"
+writes_enabled = false
+goal = "Read the business skill and process the event using verified metadata and rules."
+max_rows = 100
+max_statements = 10
+max_tool_calls = 24
+max_revisions = 3
+recursion_limit = 40

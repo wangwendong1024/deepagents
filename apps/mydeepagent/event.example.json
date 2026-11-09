@@ -1,0 +1,6 @@
+{
+  "event_id": "example-event-001",
+  "payload": {
+    "description": "Replace with the actual MQTT business payload after defining its mapping."
+  }
+}
