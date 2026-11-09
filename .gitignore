@@ -267,3 +267,12 @@ node_modules/
 
 # Generated at build time by libs/code/hatch_build.py (stamps the release commit)
 libs/code/deepagents_code/_build_info.py
+
+# Publication sync metadata stays out of version control.
+.kwtrocksai/
+
+# Local Cursor and Codex skills are not committed to GitHub or GitLab.
+.agents/skills/kwtrocksai-workspace/
+.cursor/skills/
+.codex/skills/
+apps/mydeepagent/skills/
